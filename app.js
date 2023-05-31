@@ -1,46 +1,63 @@
-let express=require('express')
-let app=express()
-let users=[{"id":1,"name":"rishi"},{"id":2,"name":"rishitha"}]
-app.get('/users/:id',(req,res)=>{
-    //res.send("home page")
-//    res.send(req.params);
-//    console.log(req.params)
-    users.forEach(users=>{
-        if(req.params.id==users.id){
-            console.log("found");
-            res.json(users)
-        }
-    })
-  //  res.sendFile(__dirname + '/index.html')
-})
-app.post('/users',(req,res)=>{
-    let user={
-        id:4,
-        name:"sidhartha"
-    }
-    users.push(user)
-    res.json(user)
-})
-app.put('/users/:id',(req,res)=>{
-   let user=users.find((user)=>user.id===parseInt(req.params.id))
-            if(user){
-                user.id=req.body.id,
-                user.name=req.body.name
-                res.json(user);
-            }else{
-                res.json({message:"user doesnt exist"})
-            }
-   
-})
-app.delete('/users/:id',(req,res)=>{
-    let user=users.find((user)=>user.id===parseInt(req.params.id))
-             if(user){
-                 let index=users.indexOf(user)
-                 users.slice(index,1)
-                 res.json(user);
-             }else{
-                 res.json({message:"user doesnt exist"})
-             }
-    
- })
-app.listen(3000,()=>console.log("server started"))
+const express = require('express');
+const app = express();
+const port = 3000;
+
+app.use(express.json());
+
+// Routes will be added here
+
+app.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
+});
+// Sample array to store student data
+let students = [];
+
+// GET all students
+app.get('/students', (req, res) => {
+  res.json(students);
+});
+
+// GET a single student by ID
+app.get('/students/:id', (req, res) => {
+  const student = students.find((student) => student.id === req.params.id);
+
+  if (!student) {
+    return res.status(404).json({ error: 'Student not found' });
+  }
+
+  res.json(student);
+});
+
+// POST a new student
+app.post('/students', (req, res) => {
+  const student = req.body;
+
+  students.push(student);
+
+  res.status(201).json(student);
+});
+
+// PUT (update) a student by ID
+app.put('/students/:id', (req, res) => {
+  const studentId = req.params.id;
+  const updatedStudent = req.body;
+
+  const index = students.findIndex((student) => student.id === studentId);
+
+  if (index === -1) {
+    return res.status(404).json({ error: 'Student not found' });
+  }
+
+  students[index] = updatedStudent;
+
+  res.json(updatedStudent);
+});
+
+// DELETE a student by ID
+app.delete('/students/:id', (req, res) => {
+  const studentId = req.params.id;
+
+  students = students.filter((student) => student.id !== studentId);
+
+  res.sendStatus(204);
+});
